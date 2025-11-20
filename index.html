@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AnsarMissan AppStore</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h1>📱 AnsarMissan AppStore</h1>
+    <p>Download your favorite apps below</p>
+    <div class="app-list">
+        {% for file in files %}
+        <div class="app-card">
+            <h3>{{ file[:-4] }}</h3>
+            <a href="/download/{{ file }}" class="btn">Download APK</a>
+        </div>
+        {% endfor %}
+    </div>
+    <footer>© 2025 Ansar Missan</footer>
+</body>
+</html>
