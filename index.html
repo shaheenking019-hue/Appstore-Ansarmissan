@@ -8,19 +8,46 @@
         /* Global Styles */
         body {
             font-family: Arial, sans-serif;
-            background-color: #0a0a0a;
-            color: white;
-            text-align: center;
             margin: 0;
             padding: 0;
+            background-color: #0a0a0a;
+            color: white;
         }
 
         h1 {
             color: #00ffcc;
-            margin-top: 20px;
         }
 
+        /* Sidebar */
+        #sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #111;
+            padding-top: 50px;
+        }
+
+        #sidebar a {
+            padding: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            text-align: center;
+            margin: 10px 0;
+            background-color: #333;
+            border-radius: 5px;
+        }
+
+        #sidebar a:hover {
+            background-color: #575757;
+        }
+
+        /* App List */
         .app-list {
+            margin-left: 300px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -33,6 +60,13 @@
             padding: 15px;
             margin: 10px;
             width: 200px;
+            text-align: center;
+        }
+
+        .app-card img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
         }
 
         .app-card h3 {
@@ -49,116 +83,123 @@
 
         footer {
             margin-top: 50px;
+            text-align: center;
             color: gray;
         }
 
-        input, button {
-            padding: 8px;
-            margin: 5px;
-            border-radius: 5px;
+        /* Login page */
+        #login-page {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Admin Panel */
-        form {
-            margin-top: 20px;
+        #login-page form {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
         }
+
+        #login-page input {
+            padding: 10px;
+            margin: 10px;
+            width: 200px;
+        }
+
+        #login-page button {
+            padding: 10px;
+            background-color: #00ffcc;
+            border: none;
+            color: black;
+            cursor: pointer;
+        }
+
+        #login-page button:hover {
+            background-color: #00cc99;
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- Home Page (App Store) -->
-    <div id="home-page">
-        <header>
-            <h1>📱 AnsarMissan AppStore</h1>
-            <p>Download your favorite apps below</p>
-        </header>
+<!-- Sidebar -->
+<div id="sidebar">
+    <h1>AnsarMissan</h1>
+    <a href="#" onclick="showLoginPage()">Admin Panel</a>
+</div>
 
-        <div class="app-list" id="app-list">
-            <!-- APK List will be populated here using JavaScript -->
-        </div>
+<!-- Main content (App List) -->
+<div class="app-list" id="app-list">
+    <!-- JavaScript will populate this section -->
+</div>
 
-        <footer>© 2025 Ansar Missan</footer>
-    </div>
+<!-- Footer -->
+<footer>© 2025 Ansar Missan</footer>
 
-    <!-- Admin Panel Page -->
-    <div id="admin-page" style="display: none;">
-        <header>
-            <h1>Admin Panel - Upload New APK</h1>
-        </header>
+<!-- Login Page (Hidden by default) -->
+<div id="login-page">
+    <form id="login-form">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username" required><br>
+        <input type="password" id="password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
+    </form>
+</div>
 
-        <form id="upload-form">
-            <label for="app-name">App Name:</label>
-            <input type="text" id="app-name" name="name" required><br>
+<script>
+    // Simulated App Data (icons and names)
+    const apps = [
+        { name: "App1", icon: "https://via.placeholder.com/100x100.png?text=App1", file: "app1.apk" },
+        { name: "App2", icon: "https://via.placeholder.com/100x100.png?text=App2", file: "app2.apk" },
+        { name: "App3", icon: "https://via.placeholder.com/100x100.png?text=App3", file: "app3.apk" }
+    ];
 
-            <label for="apk-file">Select APK File:</label>
-            <input type="file" id="apk-file" accept=".apk" required><br>
-
-            <button type="submit">Upload</button>
-        </form>
-
-        <a href="#" onclick="goBack()">← Back to Home</a>
-    </div>
-
-    <!-- JavaScript Section -->
-    <script>
-        // Simulated list of APK files
-        const apkFiles = [
-            { name: "App1", file: "app1.apk" },
-            { name: "App2", file: "app2.apk" },
-            { name: "App3", file: "app3.apk" }
-        ];
-
-        // Load APK list on the home page
-        function loadAppList() {
-            const appList = document.getElementById('app-list');
-            appList.innerHTML = ''; // Clear any existing list
-            apkFiles.forEach(app => {
-                const appCard = document.createElement('div');
-                appCard.classList.add('app-card');
-                appCard.innerHTML = `
-                    <h3>${app.name}</h3>
-                    <a href="${app.file}" class="btn" download>Download APK</a>
-                `;
-                appList.appendChild(appCard);
-            });
-        }
-
-        // Handle APK upload
-        document.getElementById('upload-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const appName = document.getElementById('app-name').value;
-            const apkFile = document.getElementById('apk-file').files[0];
-
-            if (appName && apkFile) {
-                // Simulate file upload by adding to the list
-                apkFiles.push({ name: appName, file: apkFile.name });
-
-                alert('APK uploaded successfully!');
-
-                // Clear the form fields
-                document.getElementById('app-name').value = '';
-                document.getElementById('apk-file').value = '';
-
-                // Reload the app list
-                loadAppList();
-            }
+    // Function to populate app list
+    function loadAppList() {
+        const appList = document.getElementById('app-list');
+        apps.forEach(app => {
+            const appCard = document.createElement('div');
+            appCard.classList.add('app-card');
+            appCard.innerHTML = `
+                <img src="${app.icon}" alt="${app.name} Icon">
+                <h3>${app.name}</h3>
+                <a href="#" class="btn" download="${app.file}">Download APK</a>
+            `;
+            appList.appendChild(appCard);
         });
+    }
 
-        // Switch to admin panel view
-        function goToAdminPanel() {
-            document.getElementById('home-page').style.display = 'none';
-            document.getElementById('admin-page').style.display = 'block';
+    // Function to show login page when admin button is clicked
+    function showLoginPage() {
+        document.getElementById('login-page').style.display = 'flex';
+    }
+
+    // Handle login submission
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // Simulating login (for demonstration purposes)
+        if (username === "admin" && password === "password123") {
+            alert("Login successful!");
+            document.getElementById('login-page').style.display = 'none'; // Hide login page
+            // Here you can show the actual admin panel content
+        } else {
+            alert("Invalid credentials!");
         }
+    });
 
-        // Switch back to home page view
-        function goBack() {
-            document.getElementById('admin-page').style.display = 'none';
-            document.getElementById('home-page').style.display = 'block';
-        }
-
-        // Load the app list when the page loads
-        window.onload = loadAppList;
-    </script>
+    // Call the loadAppList function to display apps
+    window.onload = loadAppList;
+</script>
 
 </body>
 </html>
