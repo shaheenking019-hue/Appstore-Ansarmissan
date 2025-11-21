@@ -15,19 +15,10 @@ if not os.path.exists(UPLOAD_FOLDER):
 def index():
     files = os.listdir(app.config['UPLOAD_FOLDER'])
     return render_template('index.html', files=files)
-
-# Admin panel - upload new APK
 @app.route('/admin', methods=['GET', 'POST'])
 def upload_file():
-    if request.method == 'POST':
-        file = request.files['file']
-        name = request.form['name']
-        if file and file.filename.endswith('.apk'):
-            filename = name.replace(" ", "_") + ".apk"
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            return redirect(url_for('index'))
-    return render_template('upload.html')
+    # Code for uploading APKs and handling form
+    return render_template('upload.html')  # Render Admin Panel page
 
 # Download APK route
 @app.route('/download/<filename>')
