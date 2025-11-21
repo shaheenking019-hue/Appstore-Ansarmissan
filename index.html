@@ -1,102 +1,164 @@
-from flask import Flask, render_template_string, request, redirect, url_for, send_from_directory
-import os
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnsarMissan AppStore</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0a0a0a;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
 
-app = Flask(__name__)
+        h1 {
+            color: #00ffcc;
+            margin-top: 20px;
+        }
 
-# Upload folder setup
-UPLOAD_FOLDER = "static/uploads"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+        .app-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px;
+        }
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+        .app-card {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            width: 200px;
+        }
 
-# Home page - list all APKs
-@app.route('/')
-def index():
-    files = os.listdir(app.config['UPLOAD_FOLDER'])
-    # HTML template for the frontend
-    index_html = '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>AnsarMissan AppStore</title>
-        <style>
-            body { font-family: Arial, sans-serif; background: #0a0a0a; color: white; text-align: center; margin: 0; padding: 0; }
-            h1 { color: #00ffcc; margin-top: 20px; }
-            .app-list { display: flex; flex-wrap: wrap; justify-content: center; margin: 20px; }
-            .app-card { background: #1a1a1a; border-radius: 10px; padding: 15px; margin: 10px; width: 200px; }
-            .btn { background: #00ffcc; color: black; padding: 10px; border-radius: 5px; text-decoration: none; }
-            footer { margin-top: 50px; color: gray; }
-            input, button { padding: 8px; margin: 5px; border-radius: 5px; }
-        </style>
-    </head>
-    <body>
-        <h1>📱 AnsarMissan AppStore</h1>
-        <p>Download your favorite apps below</p>
-        
-        <div class="app-list">
-            {% for file in files %}
-            <div class="app-card">
-                <h3>{{ file[:-4] }}</h3>  <!-- Remove .apk extension -->
-                <a href="/download/{{ file }}" class="btn">Download APK</a>
-            </div>
-            {% endfor %}
+        .app-card h3 {
+            color: #00ffcc;
+        }
+
+        .btn {
+            background-color: #00ffcc;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: 50px;
+            color: gray;
+        }
+
+        input, button {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        /* Admin Panel */
+        form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Home Page (App Store) -->
+    <div id="home-page">
+        <header>
+            <h1>📱 AnsarMissan AppStore</h1>
+            <p>Download your favorite apps below</p>
+        </header>
+
+        <div class="app-list" id="app-list">
+            <!-- APK List will be populated here using JavaScript -->
         </div>
-        
-        <footer>© 2025 Ansar Missan</footer>
-    </body>
-    </html>
-    '''
-    return render_template_string(index_html, files=files)
 
-# Admin panel - upload new APK
-@app.route('/admin', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        file = request.files['file']
-        name = request.form['name']
-        if file and file.filename.endswith('.apk'):
-            filename = name.replace(" ", "_") + ".apk"
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            return redirect(url_for('index'))
-    
-    # Admin panel HTML template
-    upload_html = '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Admin - Upload APK</title>
-        <style>
-            body { font-family: Arial, sans-serif; background: #0a0a0a; color: white; text-align: center; margin: 0; padding: 0; }
-            h1 { color: #00ffcc; margin-top: 20px; }
-            form { margin-top: 20px; }
-            input, button { padding: 8px; margin: 5px; border-radius: 5px; }
-        </style>
-    </head>
-    <body>
-        <h1>Admin Panel - Upload New APK</h1>
-        <form method="POST" enctype="multipart/form-data">
-            <label>App Name:</label>
-            <input type="text" name="name" required><br>
-            <label>Select APK File:</label>
-            <input type="file" name="file" accept=".apk" required><br>
+        <footer>© 2025 Ansar Missan</footer>
+    </div>
+
+    <!-- Admin Panel Page -->
+    <div id="admin-page" style="display: none;">
+        <header>
+            <h1>Admin Panel - Upload New APK</h1>
+        </header>
+
+        <form id="upload-form">
+            <label for="app-name">App Name:</label>
+            <input type="text" id="app-name" name="name" required><br>
+
+            <label for="apk-file">Select APK File:</label>
+            <input type="file" id="apk-file" accept=".apk" required><br>
+
             <button type="submit">Upload</button>
         </form>
-        <a href="/">← Back to Home</a>
-    </body>
-    </html>
-    '''
-    return render_template_string(upload_html)
 
-# Download APK route
-@app.route('/download/<filename>')
-def download_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+        <a href="#" onclick="goBack()">← Back to Home</a>
+    </div>
 
-# Run Flask with dynamic port for Vercel deployment
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    <!-- JavaScript Section -->
+    <script>
+        // Simulated list of APK files
+        const apkFiles = [
+            { name: "App1", file: "app1.apk" },
+            { name: "App2", file: "app2.apk" },
+            { name: "App3", file: "app3.apk" }
+        ];
+
+        // Load APK list on the home page
+        function loadAppList() {
+            const appList = document.getElementById('app-list');
+            appList.innerHTML = ''; // Clear any existing list
+            apkFiles.forEach(app => {
+                const appCard = document.createElement('div');
+                appCard.classList.add('app-card');
+                appCard.innerHTML = `
+                    <h3>${app.name}</h3>
+                    <a href="${app.file}" class="btn" download>Download APK</a>
+                `;
+                appList.appendChild(appCard);
+            });
+        }
+
+        // Handle APK upload
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const appName = document.getElementById('app-name').value;
+            const apkFile = document.getElementById('apk-file').files[0];
+
+            if (appName && apkFile) {
+                // Simulate file upload by adding to the list
+                apkFiles.push({ name: appName, file: apkFile.name });
+
+                alert('APK uploaded successfully!');
+
+                // Clear the form fields
+                document.getElementById('app-name').value = '';
+                document.getElementById('apk-file').value = '';
+
+                // Reload the app list
+                loadAppList();
+            }
+        });
+
+        // Switch to admin panel view
+        function goToAdminPanel() {
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('admin-page').style.display = 'block';
+        }
+
+        // Switch back to home page view
+        function goBack() {
+            document.getElementById('admin-page').style.display = 'none';
+            document.getElementById('home-page').style.display = 'block';
+        }
+
+        // Load the app list when the page loads
+        window.onload = loadAppList;
+    </script>
+
+</body>
+</html>
